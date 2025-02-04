@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CourseWorkGPT Search</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(45deg, #9e5fe0, #2974ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .card {
+      border: none;
+      border-radius: 1rem;
+      background: linear-gradient(45deg, rgba(0,0,0,0.2), rgba(255,255,255,0.1));
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    .response-container {
+      background: #fff;
+      border: 1px solid #b19a9a;
+      border-radius: 10px;
+      max-height: 350px;
+      overflow-y: auto;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .message {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      max-width: 75%;
+      word-break: break-word;
+    }
+    .message.user {
+      background-color: #d1e7dd;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+    .message.ai {
+      background-color: #f8f9fa;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+    .loading {
+      font-size: 14px;
+      color: #2575fc;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card p-4">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-3 fw-bold">Sage AI 
+              <div class="container text-center mt-5">
+                <div class="row justify-content-center">
+                  <div class="col-auto">
+                    <!-- Icon container with Bootstrap classes for border, rounding, and shadow -->
+                    <div class="icon-container border rounded shadow">
+                      <!-- Responsive image using Bootstrap's img-fluid -->
+                      <img
+                        src="ICON.png"
+                        alt="Icon"
+                        class="img-fluid"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+              <!-- Bootstrap Bundle with Popper (Optional, for other components) -->
+              <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            </body>
+            </h2>
+            <h6 class="card-subtitle text-center text-muted mb-4">By Simon Musipex</h6>
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="bi bi-search"></i>
+              </span>
+              <input type="text" id="searchInput" class="form-control" placeholder="Ask something..." autofocus>
+              <button class="btn btn-primary" type="button" onclick="sendMessage()">Search</button>
+            </div>
+            <div class="response-container d-flex flex-column" id="responseContainer">
+              <div class="message ai" id="responseBox">Waiting for input...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('searchInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const responseContainer = document.getElementById('responseContainer');
+      const searchInput = document.getElementById('searchInput');
+      const userQuery = searchInput.value.trim();
+
+      if (!userQuery) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = "message ai text-danger";
+        errorMsg.textContent = "Please enter a query.";
+        responseContainer.appendChild(errorMsg);
+        responseContainer.scrollTop = responseContainer.scrollHeight;
+        return;
+      }
+
+      const userMessage = document.createElement('div');
+      userMessage.className = "message user";
+      userMessage.innerHTML = `<strong>You:</strong> ${userQuery}`;
+      responseContainer.appendChild(userMessage);
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+      searchInput.value = "";
+
+      const aiMessage = document.createElement('div');
+      aiMessage.className = "message ai";
+      aiMessage.innerHTML = `<span class="loading">Thinking...</span>`;
+      responseContainer.appendChild(aiMessage);
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/chat/', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userQuery }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          aiMessage.innerHTML = `<span class="text-danger"><strong>Error:</strong> ${response.status} - ${errorData.error || response.statusText}</span>`;
+          return;
+        }
+
+        const data = await response.json();
+        aiMessage.innerHTML = `<strong>AI:</strong> ${data.reply || "Sorry, no response available."}`;
+      } catch (error) {
+        aiMessage.innerHTML = `<strong class="text-danger">Error:</strong> ${error.message}`;
+      }
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>
+
