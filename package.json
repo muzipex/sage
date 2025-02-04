@@ -1,7 +1,7 @@
-"scripts": {
-  "start": "node index.js"
-}
 {
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "^1.7.9",
     "cors": "^2.8.5",
@@ -10,3 +10,4 @@
     "sqlite3": "^5.1.7"
   }
 }
+
