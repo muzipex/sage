@@ -69,7 +69,7 @@ async function getAiResponse(query) {
     return `Error fetching AI response: ${error.message}`;
   }
 }
-console.log("AI Response:", aiResponse);
+
 // Primary chat endpoint that generates an AI response and saves the query to the database
 app.post('/api/chat/', async (req, res) => {
   try {
