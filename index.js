@@ -41,9 +41,11 @@ db.serialize(() => {
 async function getAiResponse(query) {
     try {
         const response = await axios.post(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent",
             {
-                contents: [{ parts: [{ text: query }] }],
+                prompt: {
+                    text: query
+                }
             },
             {
                 params: { key: GEMINI_API_KEY },
@@ -52,7 +54,7 @@ async function getAiResponse(query) {
         );
 
         if (response.data && response.data.candidates && response.data.candidates.length > 0) {
-            return response.data.candidates[0].content.parts[0].text;
+            return response.data.candidates[0].output;
         } else {
             return "AI response not found.";
         }
