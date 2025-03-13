@@ -1,31 +1,39 @@
-require('dotenv').config();
-
 const express = require('express');
-const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
-const axios = require('axios');
+const bodyParser = require('body-parser');
+const axios = require('axios');  // Install axios to make HTTP requests
 
 const app = express();
+const port = 3000;
 
-app.use(cors());
-app.use(express.json());
+// Middleware to parse incoming JSON payloads
+app.use(bodyParser.json());
 
-const N8N_WEBHOOK_URL = "https://musipex.app.n8n.cloud/webhook-test/f8158f83-ea38-4184-aa46-6a8e947720a6";
+// Define a route to handle the webhook
+app.post('/webhook', async (req, res) => {
+    // Extract the data from the request body
+    const data = req.body;
 
-app.post('/api/n8n-trigger', async (req, res) => {
-  try {
-    const response = await axios.post(
-      N8N_WEBHOOK_URL,
-      req.body
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error("n8n Webhook error:", error);
-    res.status(500).json({ error: "Error triggering n8n workflow." });
-  }
+    // Log the received data (optional)
+    console.log('Received webhook data:', data);
+
+    try {
+        // Send the received data to the n8n webhook URL
+        const n8nWebhookUrl = 'https://musipex.app.n8n.cloud/webhook/f8158f83-ea38-4184-aa46-6a8e947720a6';
+        const response = await axios.post(n8nWebhookUrl, data);
+
+        // Log the response from n8n (optional)
+        console.log('n8n response:', response.data);
+
+        // Respond back to the original request with the same data
+        res.status(200).json(data);
+    } catch (error) {
+        // Handle error if request to n8n fails
+        console.error('Error sending to n8n:', error);
+        res.status(500).send('Error sending data to n8n');
+    }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Start the server
+app.listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
 });
