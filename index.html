@@ -178,7 +178,7 @@ async function sendMessage() {
 
     try {
         // Send the user query to the webhook server
-        const response = await fetch('https://musipex.app.n8n.cloud/webhook-test/f8158f83-ea38-4184-aa46-6a8e947720a6', {  // Replace with your live webhook URL if needed
+        const response = await fetch('https://sage-sfyk.onrender.com', {  // Replace with your live webhook URL if needed
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: userQuery }),  // Adjust the data structure as per your webhook server expectations
