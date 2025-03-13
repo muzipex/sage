@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const N8N_WEBHOOK_URL = "https://musipex.app.n8n.cloud/webhook/f8158f83-ea38-4184-aa46-6a8e947720a6";
+const N8N_WEBHOOK_URL = "https://musipex.app.n8n.cloud/webhook-test/f8158f83-ea38-4184-aa46-6a8e947720a6";
 
 app.post('/api/n8n-trigger', async (req, res) => {
   try {
